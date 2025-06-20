@@ -40,7 +40,7 @@ async function switchDay(day) {
   if (btn) btn.classList.add("active");
 
   try {
-    const res = await fetch(`http://localhost:5000/api/schedule/${currentDay}`);
+    const res = await fetch(`https://medicalconf.onrender.com/api/schedule/${currentDay}`);
     const data = await res.json();
     scheduleData[currentDay] = data.sort((a, b) => getRawTime(a.startTime).localeCompare(getRawTime(b.startTime)));
   } catch (err) {
@@ -56,11 +56,10 @@ async function switchDay(day) {
 document.getElementById("addButton").addEventListener("click", async () => {
   const timeInput = document.getElementById("time");
   const topic = document.getElementById("topic").value.trim();
-  const faculty = document.getElementById("faculty").value.trim(); // Can be blank
+  const faculty = document.getElementById("faculty").value.trim();
   const duration = parseInt(document.getElementById("duration").value.trim());
   const session = "Session 1";
 
-  // ✅ Validation: Faculty can be blank, but others must be filled
   if (!timeInput.value.trim() || !topic || isNaN(duration)) {
     alert("Please fill all required fields: Start Time, Topic, and Duration.");
     return;
@@ -74,7 +73,7 @@ document.getElementById("addButton").addEventListener("click", async () => {
   const entry = { day: currentDay, startTime, endTime, topic, faculty, duration, session };
 
   try {
-    const res = await fetch("http://localhost:5000/api/schedule", {
+    const res = await fetch("https://medicalconf.onrender.com/api/schedule", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry)
@@ -111,7 +110,7 @@ function renderTable() {
     sessionSelect.addEventListener("change", async () => {
       entry.session = sessionSelect.value;
       try {
-        await fetch(`http://localhost:5000/api/schedule/${entry._id}`, {
+        await fetch(`https://medicalconf.onrender.com/api/schedule/${entry._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(entry)
@@ -131,16 +130,15 @@ function renderTable() {
 
     const actionCell = document.createElement("td");
     actionCell.innerHTML = `
-  <button class="action-btn delete" style="background-color:#8e24aa; color:white;" onclick="deleteEntry(${index})">🗑️ Delete</button>
-  <button class="action-btn add-below" style="background-color:#6a1b9a; color:white; margin-left:5px;" onclick="showInlineAdd(${index})">➕ Add Below</button>
-`;
-
+      <button class="action-btn delete" style="background-color:#8e24aa; color:white;" onclick="deleteEntry(${index})">🗑️ Delete</button>
+      <button class="action-btn add-below" style="background-color:#6a1b9a; color:white; margin-left:5px;" onclick="showInlineAdd(${index})">➕ Add Below</button>
+    `;
 
     row.append(sessionCell, timeCell, topicCell, facultyCell, durationCell, actionCell);
     tableBody.appendChild(row);
   });
-
 }
+
 function showInlineAdd(index) {
   const tableBody = document.getElementById("scheduleTable");
   const row = document.createElement("tr");
@@ -189,7 +187,7 @@ async function saveInlineAdd(index) {
   };
 
   try {
-    const res = await fetch("http://localhost:5000/api/schedule", {
+    const res = await fetch("https://medicalconf.onrender.com/api/schedule", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry)
@@ -203,7 +201,6 @@ async function saveInlineAdd(index) {
     console.error("Add Below failed:", err);
   }
 }
-
 
 function createEditableCell(entry, key, index, isNumber = false) {
   const cell = document.createElement("td");
@@ -231,7 +228,7 @@ function createEditableCell(entry, key, index, isNumber = false) {
         entry.endTime = formatTimeToAMPM(newEndRaw);
       }
 
-      fetch(`http://localhost:5000/api/schedule/${entry._id}`, {
+      fetch(`https://medicalconf.onrender.com/api/schedule/${entry._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry)
@@ -249,7 +246,7 @@ function createEditableCell(entry, key, index, isNumber = false) {
 async function deleteEntry(index) {
   const entry = scheduleData[currentDay][index];
   try {
-    await fetch(`http://localhost:5000/api/schedule/${entry._id}`, {
+    await fetch(`https://medicalconf.onrender.com/api/schedule/${entry._id}`, {
       method: "DELETE"
     });
     scheduleData[currentDay].splice(index, 1);
